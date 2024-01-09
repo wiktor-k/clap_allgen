@@ -1,0 +1,21 @@
+# SPDX-FileCopyrightText: 2023 Wiktor Kwapisiewicz <wiktor@metacode.biz>
+# SPDX-License-Identifier: CC0-1.0
+when:
+  event: pull_request
+
+clone:
+  git:
+    image: woodpeckerci/plugin-git
+    settings:
+      partial: false
+      # Assuming that PRs will have <= 50 commits
+      depth: 50
+
+steps:
+  dco-check:
+    image: rust
+    commands:
+      # download the tip of the branch being merged into
+      - git fetch origin $CI_REPO_DEFAULT_BRANCH
+      # do the actual dco check
+      - ./scripts/dco-check

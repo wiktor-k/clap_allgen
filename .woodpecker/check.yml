@@ -1,0 +1,23 @@
+# SPDX-FileCopyrightText: 2023 Wiktor Kwapisiewicz <wiktor@metacode.biz>
+# SPDX-License-Identifier: CC0-1.0
+when:
+  event: pull_request
+
+steps:
+  check:
+    image: rust
+    commands:
+      # check versions:
+      - rustc --version
+      - cargo --version
+      # install "codespell"
+      - apt-get update -y -qq && apt-get install -y -qq --no-install-recommends codespell clang llvm openssh-client pkg-config nettle-dev
+      # install "cargo clippy"
+      - rustup component add clippy
+      # install "cargo +nightly fmt"
+      - rustup toolchain install nightly
+      - rustup component add --toolchain nightly rustfmt
+      # install "cargo deny"
+      - cargo install cargo-deny
+      # do the actual check
+      - ./scripts/check

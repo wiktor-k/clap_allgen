@@ -1,0 +1,18 @@
+# SPDX-FileCopyrightText: 2023 David Runge <dave@sleepmap.de>
+# SPDX-License-Identifier: CC0-1.0
+
+clone:
+  git:
+    image: woodpeckerci/plugin-git
+    settings:
+      lfs: false
+
+when:
+  branch: main
+  event:
+    - push
+    - pull_request
+
+steps:
+  reuse:
+    image: fsfe/reuse
