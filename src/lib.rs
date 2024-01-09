@@ -21,7 +21,6 @@ use clap_mangen::Man;
 /// Render shell completion files to an output directory
 pub fn render_shell_completions(
     mut command: &mut Command,
-    bin_name: &str,
     output_dir: &Path,
 ) -> Result<(), Box<dyn std::error::Error>> {
     create_dir_all(output_dir)
@@ -31,6 +30,10 @@ pub fn render_shell_completions(
         "Writing shell completions to {}",
         output_dir.to_str().unwrap_or(&format!("{:?}", output_dir))
     );
+    let bin_name = command
+        .get_bin_name()
+        .unwrap_or(command.get_name())
+        .to_string();
 
     for shell in &[
         Shell::Bash,
@@ -39,7 +42,7 @@ pub fn render_shell_completions(
         Shell::PowerShell,
         Shell::Zsh,
     ] {
-        generate_to(*shell, &mut command, bin_name, output_dir).map_err(|_| {
+        generate_to(*shell, &mut command, &bin_name, output_dir).map_err(|_| {
             anyhow!(
                 "Failed to create file: {}{}{}",
                 output_dir.display(),

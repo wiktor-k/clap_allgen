@@ -33,7 +33,7 @@ fn manpages(#[from(create_tempdir)] path: PathBuf) -> testresult::TestResult {
 #[rstest]
 #[trace]
 fn shell_completions(#[from(create_tempdir)] path: PathBuf) -> testresult::TestResult {
-    render_shell_completions(&mut Commands::command(), "test", &path)?;
-    assert!(path.join("test.bash").exists());
+    render_shell_completions(&mut Commands::command(), &path)?;
+    assert!(path.join("this-is-example.bash").exists());
     Ok(())
 }
