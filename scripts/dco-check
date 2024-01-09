@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+#
+# SPDX-FileCopyrightText: 2023 Wiktor Kwapisiewicz <wiktor@metacode.biz>
+# SPDX-License-Identifier: CC0-1.0
+
+set -euo pipefail
+
+# Move faster checks near the top of this script.  For example
+# codespell is very fast. cargo fmt does not need to download crates etc.
+
+function check_dco {
+  for commit in $(git rev-list "$1"); do
+    if ! git show -s --format=%B "$commit" | grep -q "Signed-off-by: "; then
+      echo "$commit is bad: lacks Signed-off-by line"
+      echo "  Please use:"
+      echo "    git rebase --signoff main && git push --force-with-lease"
+      echo "  See https://developercertificate.org/ for more details."
+      exit 1;
+    else
+      echo "$commit is good."
+    fi
+  done
+}
+
+if [ -z "${CI_REPO_DEFAULT_BRANCH-}" ]; then
+  check_dco "main.."
+else
+  check_dco "origin/$CI_REPO_DEFAULT_BRANCH.."
+fi
+

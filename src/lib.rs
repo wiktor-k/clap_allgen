@@ -27,7 +27,7 @@ pub enum Error {
     #[error("Failed to create directory: {0}")]
     DirectoryCreate(#[source] std::io::Error),
 
-    /// The shell completion file cound not be created.
+    /// The shell completion file could not be created.
     #[error("Failed to create shell file {1}: {0}")]
     ShellFile(#[source] std::io::Error, String),
 
@@ -44,7 +44,7 @@ pub fn render_shell_completions<T: CommandFactory>(
 
     let mut command = T::command();
 
-    create_dir_all(output_dir).map_err(|e| Error::DirectoryCreate(e))?;
+    create_dir_all(output_dir).map_err(Error::DirectoryCreate)?;
 
     let bin_name = command
         .get_bin_name()
@@ -111,7 +111,7 @@ pub fn render_manpages<T: CommandFactory>(
         Ok(())
     }
 
-    create_dir_all(output_dir).map_err(|e| Error::DirectoryCreate(e))?;
+    create_dir_all(output_dir).map_err(Error::DirectoryCreate)?;
 
     command.build();
 
