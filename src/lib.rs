@@ -7,16 +7,26 @@
 use std::fs::create_dir_all;
 use std::fs::File;
 use std::io::Write;
-use std::path::Path;
-use std::path::MAIN_SEPARATOR;
+use std::path::{Path, PathBuf};
 
-use anyhow::anyhow;
-use anyhow::Result;
 use clap::CommandFactory;
 
 use clap_complete::generate_to;
 use clap_complete::Shell;
 use clap_mangen::Man;
+
+#[derive(Debug, thiserror::Error)]
+#[non_exhaustive]
+pub enum Error {
+    #[error("Failed to create directory: {0}")]
+    DirectoryCreate(#[source] std::io::Error),
+
+    #[error("Failed to create shell file {1}: {0}")]
+    ShellFile(#[source] std::io::Error, String),
+
+    #[error("Failed to process man file {1}: {0}")]
+    ManFile(#[source] std::io::Error, PathBuf),
+}
 
 /// Render shell completion files to an output directory
 pub fn render_shell_completions<T: CommandFactory>(
@@ -24,13 +34,8 @@ pub fn render_shell_completions<T: CommandFactory>(
 ) -> Result<(), Box<dyn std::error::Error>> {
     let mut command = T::command();
 
-    create_dir_all(output_dir)
-        .map_err(|_| anyhow!("Failed to create directory: {}", output_dir.display()))?;
+    create_dir_all(output_dir).map_err(|e| Error::DirectoryCreate(e))?;
 
-    println!(
-        "Writing shell completions to {}",
-        output_dir.to_str().unwrap_or(&format!("{:?}", output_dir))
-    );
     let bin_name = command
         .get_bin_name()
         .unwrap_or(command.get_name())
@@ -43,14 +48,8 @@ pub fn render_shell_completions<T: CommandFactory>(
         Shell::PowerShell,
         Shell::Zsh,
     ] {
-        generate_to(*shell, &mut command, &bin_name, output_dir).map_err(|_| {
-            anyhow!(
-                "Failed to create file: {}{}{}",
-                output_dir.display(),
-                MAIN_SEPARATOR,
-                shell
-            )
-        })?;
+        generate_to(*shell, &mut command, &bin_name, output_dir)
+            .map_err(|e| Error::ShellFile(e, shell.to_string()))?;
     }
     Ok(())
 }
@@ -79,24 +78,14 @@ pub fn render_manpages<T: CommandFactory>(
 
         let command = &mut command.clone().name(&name);
 
-        let mut out = File::create(output_dir.join(format!("{name}.1"))).map_err(|_| {
-            anyhow!(
-                "Failed creating {}",
-                output_dir.join(format!("{name}.1")).display()
-            )
-        })?;
-        Man::new(command.clone()).render(&mut out).map_err(|_| {
-            anyhow!(
-                "Failed rendering {}",
-                output_dir.join(format!("{name}.1")).display()
-            )
-        })?;
-        out.flush().map_err(|_| {
-            anyhow!(
-                "Failed writing {}",
-                output_dir.join(format!("{name}.1")).display()
-            )
-        })?;
+        let file_name = output_dir.join(format!("{name}.1"));
+
+        let mut out = File::create(&file_name).map_err(|e| Error::ManFile(e, file_name.clone()))?;
+        Man::new(command.clone())
+            .render(&mut out)
+            .map_err(|e| Error::ManFile(e, file_name.clone()))?;
+        out.flush()
+            .map_err(|e| Error::ManFile(e, file_name.clone()))?;
 
         // get the current command's name to prefix any further subcommands
         let cmd_name = command.get_name().to_string();
@@ -110,15 +99,9 @@ pub fn render_manpages<T: CommandFactory>(
         Ok(())
     }
 
-    create_dir_all(output_dir)
-        .map_err(|_| anyhow!("Failed creating directory {}", output_dir.display()))?;
+    create_dir_all(output_dir).map_err(|e| Error::DirectoryCreate(e))?;
 
     command.build();
-
-    println!(
-        "Writing man pages to {}",
-        output_dir.to_str().unwrap_or(&format!("{:?}", output_dir))
-    );
 
     render_recursive(output_dir, &mut command, "")?;
 
