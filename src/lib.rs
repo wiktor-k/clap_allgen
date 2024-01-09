@@ -12,17 +12,18 @@ use std::path::MAIN_SEPARATOR;
 
 use anyhow::anyhow;
 use anyhow::Result;
-use clap::Command;
+use clap::CommandFactory;
 
 use clap_complete::generate_to;
 use clap_complete::Shell;
 use clap_mangen::Man;
 
 /// Render shell completion files to an output directory
-pub fn render_shell_completions(
-    mut command: &mut Command,
+pub fn render_shell_completions<T: CommandFactory>(
     output_dir: &Path,
 ) -> Result<(), Box<dyn std::error::Error>> {
+    let mut command = T::command();
+
     create_dir_all(output_dir)
         .map_err(|_| anyhow!("Failed to create directory: {}", output_dir.display()))?;
 
@@ -55,10 +56,11 @@ pub fn render_shell_completions(
 }
 
 /// Render man pages to an output directory
-pub fn render_manpages(
-    mut command: &mut Command,
+pub fn render_manpages<T: CommandFactory>(
     output_dir: &Path,
 ) -> Result<(), Box<dyn std::error::Error>> {
+    let mut command = T::command();
+
     /// Render man pages for commands and subcommands recursively
     fn render_recursive(
         output_dir: &Path,

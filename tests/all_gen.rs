@@ -1,4 +1,3 @@
-use clap::CommandFactory;
 use clap::Parser;
 use rstest::{fixture, rstest};
 use std::path::PathBuf;
@@ -24,7 +23,7 @@ fn create_tempdir() -> PathBuf {
 #[rstest]
 #[trace]
 fn manpages(#[from(create_tempdir)] path: PathBuf) -> testresult::TestResult {
-    render_manpages(&mut Commands::command(), &path)?;
+    render_manpages::<Commands>(&path)?;
     assert!(path.join("this-is-example.1").exists());
 
     Ok(())
@@ -33,7 +32,7 @@ fn manpages(#[from(create_tempdir)] path: PathBuf) -> testresult::TestResult {
 #[rstest]
 #[trace]
 fn shell_completions(#[from(create_tempdir)] path: PathBuf) -> testresult::TestResult {
-    render_shell_completions(&mut Commands::command(), &path)?;
+    render_shell_completions::<Commands>(&path)?;
     assert!(path.join("this-is-example.bash").exists());
     Ok(())
 }
