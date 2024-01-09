@@ -19,7 +19,7 @@ use clap_complete::generate_to;
 use clap_complete::Shell;
 use clap_mangen::Man;
 
-/// Indicates an error during all generation.
+/// Indicates an error during generation.
 #[derive(Debug, thiserror::Error)]
 #[non_exhaustive]
 pub enum Error {
@@ -36,7 +36,7 @@ pub enum Error {
     ManFile(#[source] std::io::Error, PathBuf),
 }
 
-/// Render shell completion files to an output directory
+/// Render shell completion files to an output directory.
 pub fn render_shell_completions<T: CommandFactory>(
     output_dir: impl AsRef<Path>,
 ) -> Result<(), Box<dyn std::error::Error>> {
@@ -64,7 +64,7 @@ pub fn render_shell_completions<T: CommandFactory>(
     Ok(())
 }
 
-/// Render man pages to an output directory
+/// Render man pages to an output directory.
 pub fn render_manpages<T: CommandFactory>(
     output_dir: impl AsRef<Path>,
 ) -> Result<(), Box<dyn std::error::Error>> {
