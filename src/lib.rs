@@ -4,6 +4,10 @@
 // SPDX-FileCopyrightText: 2023 David Runge <dave@sleepmap.de>
 // SPDX-License-Identifier: MIT OR Apache-2.0
 
+#![doc = include_str!("../README.md")]
+#![deny(missing_debug_implementations)]
+#![deny(missing_docs)]
+
 use std::fs::create_dir_all;
 use std::fs::File;
 use std::io::Write;
@@ -15,23 +19,29 @@ use clap_complete::generate_to;
 use clap_complete::Shell;
 use clap_mangen::Man;
 
+/// Indicates an error during all generation.
 #[derive(Debug, thiserror::Error)]
 #[non_exhaustive]
 pub enum Error {
+    /// The directory could not be created.
     #[error("Failed to create directory: {0}")]
     DirectoryCreate(#[source] std::io::Error),
 
+    /// The shell completion file cound not be created.
     #[error("Failed to create shell file {1}: {0}")]
     ShellFile(#[source] std::io::Error, String),
 
+    /// The manpage could not be processed.
     #[error("Failed to process man file {1}: {0}")]
     ManFile(#[source] std::io::Error, PathBuf),
 }
 
 /// Render shell completion files to an output directory
 pub fn render_shell_completions<T: CommandFactory>(
-    output_dir: &Path,
+    output_dir: impl AsRef<Path>,
 ) -> Result<(), Box<dyn std::error::Error>> {
+    let output_dir = output_dir.as_ref();
+
     let mut command = T::command();
 
     create_dir_all(output_dir).map_err(|e| Error::DirectoryCreate(e))?;
@@ -56,8 +66,10 @@ pub fn render_shell_completions<T: CommandFactory>(
 
 /// Render man pages to an output directory
 pub fn render_manpages<T: CommandFactory>(
-    output_dir: &Path,
+    output_dir: impl AsRef<Path>,
 ) -> Result<(), Box<dyn std::error::Error>> {
+    let output_dir = output_dir.as_ref();
+
     let mut command = T::command();
 
     /// Render man pages for commands and subcommands recursively
