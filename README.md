@@ -1,5 +1,8 @@
 # Clap All-Gen
 
+[![CI](https://github.com/wiktor-k/clap_allgen/actions/workflows/rust.yml/badge.svg)](https://github.com/wiktor-k/clap_allgen/actions/workflows/rust.yml)
+[![Crates.io](https://img.shields.io/crates/v/clap_allgen)](https://crates.io/crates/clap_allgen)
+
 The complete clap generation utility to give your command-line application users a more polished experience right out of the box.
 
 To create all shell completions use the following command:
