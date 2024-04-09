@@ -14,6 +14,7 @@ use std::io::Write;
 use std::path::{Path, PathBuf};
 
 use clap::CommandFactory;
+use clap::ValueEnum;
 use clap_complete::generate_to;
 use clap_complete::Shell;
 use clap_mangen::Man;
@@ -50,13 +51,7 @@ pub fn render_shell_completions<T: CommandFactory>(
         .unwrap_or(command.get_name())
         .to_string();
 
-    for shell in &[
-        Shell::Bash,
-        Shell::Elvish,
-        Shell::Fish,
-        Shell::PowerShell,
-        Shell::Zsh,
-    ] {
+    for shell in Shell::value_variants() {
         generate_to(*shell, &mut command, &bin_name, output_dir)
             .map_err(|e| Error::ShellFile(e, shell.to_string()))?;
     }
