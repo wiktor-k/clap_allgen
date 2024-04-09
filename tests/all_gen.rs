@@ -1,8 +1,8 @@
-use clap::Parser;
-use rstest::{fixture, rstest};
 use std::path::PathBuf;
 
+use clap::Parser;
 use clap_allgen::{render_manpages, render_shell_completions};
+use rstest::{fixture, rstest};
 /// This is a CLI tool
 #[derive(Debug, Parser)]
 #[command(name = "this-is-example")]

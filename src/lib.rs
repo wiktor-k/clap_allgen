@@ -14,7 +14,6 @@ use std::io::Write;
 use std::path::{Path, PathBuf};
 
 use clap::CommandFactory;
-
 use clap_complete::generate_to;
 use clap_complete::Shell;
 use clap_mangen::Man;
