@@ -9,8 +9,11 @@ description = "The complete clap generation utility to give your command-line ap
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+carapace_spec_clap = "1.0.0"
 clap = { version = "4.4.14", features = ["string"] }
 clap_complete = "4.4.6"
+clap_complete_fig = "4.5.2"
+clap_complete_nushell = "4.5.3"
 clap_mangen = "0.2.16"
 thiserror = "1.0.56"
 
