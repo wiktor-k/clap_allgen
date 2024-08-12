@@ -2,6 +2,7 @@
 // SPDX-FileCopyrightText: 2022 Lars Wirzenius <liw@liw.fi>
 // SPDX-FileCopyrightText: 2022 Nora Widdecke <mail@nora.pink>
 // SPDX-FileCopyrightText: 2023 David Runge <dave@sleepmap.de>
+// SPDX-FileCopyrightText: 2024 Jan Christian Grünhage <jan.christian@gruenhage.xyz>
 // SPDX-License-Identifier: MIT OR Apache-2.0
 
 #![doc = include_str!("../README.md")]
@@ -13,10 +14,13 @@ use std::fs::File;
 use std::io::Write;
 use std::path::{Path, PathBuf};
 
+use carapace_spec_clap::Spec;
 use clap::CommandFactory;
 use clap::ValueEnum;
 use clap_complete::generate_to;
 use clap_complete::Shell;
+use clap_complete_fig::Fig;
+use clap_complete_nushell::Nushell;
 use clap_mangen::Man;
 
 /// Indicates an error during generation.
@@ -55,6 +59,16 @@ pub fn render_shell_completions<T: CommandFactory>(
         generate_to(*shell, &mut command, &bin_name, output_dir)
             .map_err(|e| Error::ShellFile(e, shell.to_string()))?;
     }
+
+    generate_to(Nushell, &mut command, &bin_name, output_dir)
+        .map_err(|e| Error::ShellFile(e, "nushell".to_string()))?;
+
+    generate_to(Fig, &mut command, &bin_name, output_dir)
+        .map_err(|e| Error::ShellFile(e, "fig".to_string()))?;
+
+    generate_to(Spec, &mut command, &bin_name, output_dir)
+        .map_err(|e| Error::ShellFile(e, "carapace".to_string()))?;
+
     Ok(())
 }
 
