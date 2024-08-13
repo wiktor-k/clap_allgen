@@ -3,6 +3,7 @@
 // SPDX-FileCopyrightText: 2022 Nora Widdecke <mail@nora.pink>
 // SPDX-FileCopyrightText: 2023 David Runge <dave@sleepmap.de>
 // SPDX-FileCopyrightText: 2024 Jan Christian Grünhage <jan.christian@gruenhage.xyz>
+// SPDX-FileCopyrightText: 2024 Wiktor Kwapisiewicz <wiktor@metacode.biz>
 // SPDX-License-Identifier: MIT OR Apache-2.0
 
 #![doc = include_str!("../README.md")]
@@ -41,9 +42,29 @@ pub enum Error {
 }
 
 /// Render shell completion files to an output directory.
+///
+/// # Examples
+///
+/// The following example renders shell completions for all supported
+/// shells to the `/tmp/shell-completions` directory.
+///
+/// ```
+/// # fn main() -> testresult::TestResult {
+/// use clap_allgen::render_shell_completions;
+///
+/// #[derive(Debug, clap::Parser)]
+/// enum Commands {
+///     First,
+///     Second,
+///     Third,
+/// }
+///
+/// render_shell_completions::<Commands>("/tmp/shell-completions")?;
+/// # Ok(()) }
+/// ```
 pub fn render_shell_completions<T: CommandFactory>(
     output_dir: impl AsRef<Path>,
-) -> Result<(), Box<dyn std::error::Error>> {
+) -> Result<(), Error> {
     let output_dir = output_dir.as_ref();
 
     let mut command = T::command();
@@ -73,9 +94,27 @@ pub fn render_shell_completions<T: CommandFactory>(
 }
 
 /// Render man pages to an output directory.
-pub fn render_manpages<T: CommandFactory>(
-    output_dir: impl AsRef<Path>,
-) -> Result<(), Box<dyn std::error::Error>> {
+///
+/// # Examples
+///
+/// The following example renders manpages to the `/tmp/man-pages`
+/// directory.
+///
+/// ```
+/// # fn main() -> testresult::TestResult {
+/// use clap_allgen::render_manpages;
+///
+/// #[derive(Debug, clap::Parser)]
+/// enum Commands {
+///     First,
+///     Second,
+///     Third,
+/// }
+///
+/// render_manpages::<Commands>("/tmp/man-pages")?;
+/// # Ok(()) }
+/// ```
+pub fn render_manpages<T: CommandFactory>(output_dir: impl AsRef<Path>) -> Result<(), Error> {
     let output_dir = output_dir.as_ref();
 
     let mut command = T::command();
@@ -85,7 +124,7 @@ pub fn render_manpages<T: CommandFactory>(
         output_dir: &Path,
         command: &mut clap::Command,
         prefix: &str,
-    ) -> Result<(), Box<dyn std::error::Error>> {
+    ) -> Result<(), Error> {
         // prefix name with name of parent command if we are a subcommand
         // NOTE: this is not ideal yet, as we are getting e.g. `command-subcommand` instead of
         // `command subcommand` in SYNOPSIS, however this is due to a clap_mangen limitation:

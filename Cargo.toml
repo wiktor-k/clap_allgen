@@ -1,24 +1,25 @@
 [package]
 name = "clap_allgen"
-version = "0.1.1"
+version = "0.2.0"
 edition = "2021"
 license = "Apache-2.0 OR MIT"
 repository = "https://github.com/wiktor-k/clap_allgen"
 description = "The complete clap generation utility to give your command-line application users a more polished experience right out of the box."
-
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+categories = ["command-line-interface"]
+keywords = ["clap", "cli", "generate", "manpage", "completion"]
+exclude = [".github"]
 
 [dependencies]
 carapace_spec_clap = "1.0.0"
-clap = { version = "4.4.14", features = ["string"] }
-clap_complete = "4.4.6"
+clap = { version = "4.5.15", features = ["string"] }
+clap_complete = "4.5.16"
 clap_complete_fig = "4.5.2"
 clap_complete_nushell = "4.5.3"
-clap_mangen = "0.2.16"
-thiserror = "1.0.56"
+clap_mangen = "0.2.23"
+thiserror = "1.0.63"
 
 [dev-dependencies]
-clap = { version = "4.4.14", features = ["derive"] }
-rstest = "0.18.2"
-tempfile = "3.9.0"
-testresult = "0.3.0"
+clap = { version = "4.5.15", features = ["derive"] }
+rstest = "0.22.0"
+tempfile = "3.12.0"
+testresult = "0.4.1"
