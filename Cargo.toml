@@ -5,8 +5,9 @@ edition = "2021"
 license = "Apache-2.0 OR MIT"
 repository = "https://github.com/wiktor-k/clap_allgen"
 description = "The complete clap generation utility to give your command-line application users a more polished experience right out of the box."
-
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+categories = ["command-line-interface"]
+keywords = ["clap", "cli", "generate", "manpage", "completion"]
+exclude = [".github"]
 
 [dependencies]
 carapace_spec_clap = "1.0.0"
