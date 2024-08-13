@@ -5,6 +5,10 @@
 
 The complete clap generation utility to give your command-line application users a more polished experience right out of the box.
 
+This single crate integrates all other shell-specific crates to generate *all the things* at once.
+
+## Examples
+
 To create all shell completions use the following command:
 
 ```rust
@@ -12,9 +16,9 @@ use clap_allgen::render_shell_completions;
 
 #[derive(Debug, clap::Parser)]
 enum Commands {
-  First,
-  Second,
-  Third,
+    First,
+    Second,
+    Third,
 }
 
 render_shell_completions::<Commands>("/tmp/shell-completions").expect("generation to work");
@@ -27,9 +31,9 @@ use clap_allgen::render_manpages;
 
 #[derive(Debug, clap::Parser)]
 enum Commands {
-  First,
-  Second,
-  Third,
+    First,
+    Second,
+    Third,
 }
 
 render_manpages::<Commands>("/tmp/man-pages").expect("generation to work");
