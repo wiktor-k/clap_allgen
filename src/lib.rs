@@ -15,13 +15,10 @@ use std::fs::File;
 use std::io::Write;
 use std::path::{Path, PathBuf};
 
-use carapace_spec_clap::Spec;
 use clap::CommandFactory;
 use clap::ValueEnum;
 use clap_complete::generate_to;
 use clap_complete::Shell;
-use clap_complete_fig::Fig;
-use clap_complete_nushell::Nushell;
 use clap_mangen::Man;
 
 /// Indicates an error during generation.
@@ -81,14 +78,27 @@ pub fn render_shell_completions<T: CommandFactory>(
             .map_err(|e| Error::ShellFile(e, shell.to_string()))?;
     }
 
-    generate_to(Nushell, &mut command, &bin_name, output_dir)
-        .map_err(|e| Error::ShellFile(e, "nushell".to_string()))?;
+    #[cfg(feature = "nushell")]
+    generate_to(
+        clap_complete_nushell::Nushell,
+        &mut command,
+        &bin_name,
+        output_dir,
+    )
+    .map_err(|e| Error::ShellFile(e, "nushell".to_string()))?;
 
-    generate_to(Fig, &mut command, &bin_name, output_dir)
+    #[cfg(feature = "fig")]
+    generate_to(clap_complete_fig::Fig, &mut command, &bin_name, output_dir)
         .map_err(|e| Error::ShellFile(e, "fig".to_string()))?;
 
-    generate_to(Spec, &mut command, &bin_name, output_dir)
-        .map_err(|e| Error::ShellFile(e, "carapace".to_string()))?;
+    #[cfg(feature = "carapace")]
+    generate_to(
+        carapace_spec_clap::Spec,
+        &mut command,
+        &bin_name,
+        output_dir,
+    )
+    .map_err(|e| Error::ShellFile(e, "carapace".to_string()))?;
 
     Ok(())
 }
